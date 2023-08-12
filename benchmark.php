@@ -7,7 +7,7 @@ use Maxon755\Benchmark\RuntimesExecutor;
 
 $scenario = $argv[1];
 
-$time = 5;
+$time = 10;
 $concurrency = 3;
 
 require_once __DIR__ . '/' . $scenario;
@@ -25,13 +25,12 @@ $runtimeExecutor = new RuntimesExecutor();
 // Preparation
 $preparationTask = function (string $scenario, string $scenarioClass) {
     require_once __DIR__ . '/' . $scenario;
-
     $scenario = new $scenarioClass();
 
     $scenario->prepare();
 };
 
-$runtimeExecutor->execute($concurrency, $preparationTask);
+$runtimeExecutor->execute($concurrency, $preparationTask, [$scenario, $scenarioClass]);
 
 echo 'Preparation done' . PHP_EOL;
 
