@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  php:
+    build:
+      dockerfile: Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    command: tail -f /dev/null
+
+  redis:
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  redis-data:
