@@ -1,0 +1,16 @@
+{
+    "name": "maxon755/benchmark",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Maxon755\\Benchmark\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Maksym Haiduk",
+            "email": "maksym.haiduk@gmail.com"
+        }
+    ],
+    "require": {}
+}

@@ -1,7 +1,9 @@
 <?php
 
-use parallel\Runtime;
+require_once __DIR__ . '/vendor/autoload.php';
+
 use parallel\Future;
+use Maxon755\Benchmark\RuntimesExecutor;
 
 $scenario = $argv[1];
 
@@ -9,34 +11,34 @@ $time = 5;
 $concurrency = 3;
 
 require_once __DIR__ . '/' . $scenario;
+
 /** @var Scenario $scenarioClass */
 $scenarioClass = getScenarioClassName();
 echo $scenario . PHP_EOL;
 echo $scenarioClass::description() . PHP_EOL;
+
 echo "Concurrency: $concurrency" . PHP_EOL;
 echo "Execution time: $time seconds" . PHP_EOL . PHP_EOL;
+
+$runtimeExecutor = new RuntimesExecutor();
 
 // Preparation
 $preparationTask = function (string $scenario, string $scenarioClass) {
     require_once __DIR__ . '/' . $scenario;
+
     $scenario = new $scenarioClass();
 
     $scenario->prepare();
 };
-$runtimes = array_map(fn() => new Runtime(), range(1, $concurrency));
-foreach ($runtimes as $i => $runtime) {
-    $futures[] = $runtime->run($preparationTask, [$scenario, getScenarioClassName(), $time]);
-}
-waitForFuturesDone($futures);
-echo PHP_EOL;
 
+$runtimeExecutor->execute($concurrency, $preparationTask);
+
+echo 'Preparation done' . PHP_EOL;
 
 // benchmarking
 $benchmarkTask = function (string $scenario, string $scenarioClass, int $time) {
     require_once __DIR__ . '/' . $scenario;
     $scenario = new $scenarioClass();
-
-    echo "EXECUTION". PHP_EOL;
 
     $executionCount = 0;
     $startTime = microtime(true);
@@ -51,22 +53,15 @@ $benchmarkTask = function (string $scenario, string $scenarioClass, int $time) {
         }
     }
     $scenario->cleanup();
+
     return $executionCount;
 };
 
-$runtimes = array_map(fn() => new Runtime(), range(1, $concurrency));
+$result = $runtimeExecutor->execute($concurrency, $benchmarkTask, [$scenario, $scenarioClass, $time]);
+$totalExecutions = array_reduce($result->futures, fn($sum, Future $future) => $sum + $future->value());
+$totalExecutionTime = round($result->executionTime, 3);
 
-$startTime = microtime(true);
-$futures = [];
-foreach ($runtimes as $i => $runtime) {
-    $futures[] = $runtime->run($benchmarkTask, [$scenario, getScenarioClassName(), $time]);
-}
-waitForFuturesDone($futures);
-$totalExecutions = array_reduce($futures, fn($sum, Future $future) => $sum + $future->value());
-$totalExecutionTime =  microtime(true) - $startTime;
-$totalExecutionTime = round($totalExecutionTime, 3);
-
-$executionRate =  (int) ($totalExecutions / $time);
+$executionRate = (int)($totalExecutions / $time);
 
 echo <<<OUTPUT
 Real execution time: $totalExecutionTime seconds
@@ -75,28 +70,9 @@ Executions per second: $executionRate
 
 OUTPUT;
 
-function getScenarioClassName(): string
+function getScenarioClassName() : string
 {
     $declaredClasses = get_declared_classes();
 
     return array_pop($declaredClasses);
-}
-
-/**
- * @param Future[] $futures
- *
- * @return void
- */
-function waitForFuturesDone(array $futures): void
-{
-    do {
-        usleep(1);
-        $allDone = array_reduce(
-            $futures,
-            function (bool $c, Future $future): bool {
-                return $c && $future->done();
-            },
-            true
-        );
-    } while (false === $allDone);
 }
