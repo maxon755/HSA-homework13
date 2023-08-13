@@ -26,6 +26,8 @@ class RedisQueueRead implements Scenario
         $values = range(0, 999_999);
 
         $this->redis->lPush($this->queueName, ...$values);
+        $this->redis->lPush($this->queueName, ...$values);
+        $this->redis->lPush($this->queueName, ...$values);
     }
 
     public function execute() : bool

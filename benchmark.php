@@ -5,10 +5,9 @@ require_once __DIR__ . '/vendor/autoload.php';
 use parallel\Future;
 use Maxon755\Benchmark\RuntimesExecutor;
 
-$scenario = $argv[1];
-
-$time = 10;
-$concurrency = 3;
+$concurrency = $argv[1];
+$time = $argv[2];
+$scenario = $argv[3];
 
 require_once __DIR__ . '/' . $scenario;
 
