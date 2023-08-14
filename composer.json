@@ -1,6 +1,7 @@
 {
     "name": "maxon755/benchmark",
     "type": "project",
+    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "Maxon755\\Benchmark\\": "src/"
@@ -12,5 +13,7 @@
             "email": "maksym.haiduk@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "xobotyi/beansclient": "dev-master"
+    }
 }

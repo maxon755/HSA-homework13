@@ -17,7 +17,13 @@ services:
       - "6379:6379"
     command: |
       redis-server
-      --appendonly yes
+      --appendonly no
+      --save ""
+
+  beanstalkd:
+    image: bodsch/docker-beanstalkd
+    ports:
+      - "11300:11300"
 
 volumes:
   redis-data:
