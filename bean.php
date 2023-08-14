@@ -13,14 +13,14 @@ $client = new Client(socket: $sock, defaultTube: 'myAwesomeTube');
 #   PRODUCER   #
 ##            ##
 
-$job = $client->put("job's payload");
+//$job = $client->put("job's payload");
 
-var_dump($job);
+//var_dump($job);
 
 
-$client->watchTube('myAwesomeTube2');
+//$client->watchTube('myAwesomeTube2');
 
-$job = $client->reserve();
+$job = $client->reserveWithTimeout(2);
 
 if ($job) {
     echo "Hey, i received first {$job['payload']} of job with id {$job['id']}\n";

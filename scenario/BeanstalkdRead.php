@@ -8,9 +8,7 @@ use xobotyi\beansclient\Client;
 use xobotyi\beansclient\Socket\SocketsSocket;
 
 require_once __DIR__ . '/../Scenario.php';
-
-
-class BeanstalkdWrite implements Scenario
+class BeanstalkdRead implements Scenario
 {
 
     private Client $beanstalkdClient;
@@ -25,16 +23,27 @@ class BeanstalkdWrite implements Scenario
 
     public static function description(): string
     {
-        return 'Writing to Beanstalkd';
+        return 'Reading from Beanstalkd';
     }
 
     public function prepare(): void
     {
+        $startTime = microtime(true);
+
+        while (microtime(true) - $startTime < 90) {
+            $this->beanstalkdClient->put("test_payload");
+        }
     }
 
     public function execute(): bool
     {
-        $this->beanstalkdClient->put("test_payload");
+        $job = $this->beanstalkdClient->reserveWithTimeout(1);
+
+        if ($job === null) {
+            return false;
+        }
+
+        $this->beanstalkdClient->delete($job['id']);
 
         return true;
     }
