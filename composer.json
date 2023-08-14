@@ -14,6 +14,7 @@
         }
     ],
     "require": {
-        "xobotyi/beansclient": "dev-master"
+        "xobotyi/beansclient": "dev-master",
+        "ext-redis": "*"
     }
 }

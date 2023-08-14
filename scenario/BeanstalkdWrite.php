@@ -17,18 +17,17 @@ class BeanstalkdWrite implements Scenario
 
     public function __construct()
     {
-        $socket   = new SocketsSocket(host: 'beanstalkd', port: 11300, connectionTimeout: 2);
+        $socket = new SocketsSocket(host: 'beanstalkd', port: 11300);
         $this->beanstalkdClient = new Client(socket: $socket, defaultTube: 'test_tube');
     }
 
     public static function description(): string
     {
-        return 'test';
+        return 'Writing to Beanstalkd';
     }
 
     public function prepare(): void
     {
-        return;
     }
 
     public function execute(): bool
@@ -40,6 +39,5 @@ class BeanstalkdWrite implements Scenario
 
     public function cleanup(): void
     {
-        // TODO: Implement cleanup() method.
     }
 }
