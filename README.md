@@ -1,7 +1,31 @@
+## HSA. Homework 13. Queues
 
-benchmark time: 60s
+The goal of the project is to benchmark performance of Redis and Beanstalkd queues.  
+It is done with own `multi-thread` benchmark tool written in `php`.  
+The benchmarking process is split out two parts: writing and reading.  
 
-Write performance
+The benchmarking strategy is to load queue systems over some certain time with different currencies. 
+
+### Installation
+```bash
+docker compose up -d
+docker compose exec php composer install
+```
+
+### Benchmarking tool
+```bash
+docker compose exec php php benchmark.php <concurrency> <time> <path-to-scenario>
+```
+Example:
+```bash
+dc exec php php benchmark.php 10 60 ./scenario/BeanstalkdRead.php
+```
+
+### Benchmarks results:
+
+Benchmark time: 60s
+
+#### Write performance
 
 |                                | 1     | 5      | 10     | 25     | 50     |
 |--------------------------------|-------|--------|--------|--------|--------|
@@ -12,8 +36,9 @@ Write performance
 | Beanstalkd without persistence | 21041 | 71692  | 89972  | 89693  | 87699  |
 | Beanstalkd with persistence    | 19778 | 67607  | 73296  | 73221  | 71815  |
 
+![](assets/write-performance.png)
 
-Read performance
+#### Read performance
 
 |                                | 1     | 5      | 10     | 25     | 50     |
 |--------------------------------|-------|--------|--------|--------|--------|
@@ -23,3 +48,5 @@ Read performance
 | Redis RDB + AOF                | 36631 | 107574 | 123143 | 136622 | 141602 |
 | Beanstalkd without persistence | 11713 | 38080  | 43204  | 41690  | 41191  |
 | Beanstalkd with persistence    | 10999 | 37684  | 40622  | 40718  | 34810  |
+
+![](assets/read-performance.png)

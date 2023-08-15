@@ -24,7 +24,7 @@ services:
     image: bodsch/docker-beanstalkd
     ports:
       - "11300:11300"
-    command: beanstalkd -b /tmp
+    #command: beanstalkd -b /tmp
 
 volumes:
   redis-data:
